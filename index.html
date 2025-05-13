@@ -36,12 +36,18 @@
     h1 {
       font-family: 'Fredoka', sans-serif;
       font-size: 2.5rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
       color: var(--clr-primary);
       transition: transform var(--transition);
     }
     h1:hover {
       transform: scale(1.05);
+    }
+    .clock {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 2.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--clr-text);
     }
     .button-container {
       margin-bottom: 2rem;
@@ -105,6 +111,7 @@
 </head>
 <body>
   <h1>Class Period Progress Tracker</h1>
+  <div id="currentTime" class="clock"></div>
   <div class="button-container">
     <button onclick="setDay('A')">A Day (1, 3, 5, 7)</button>
     <button onclick="setDay('B')">B Day (2, 4, 6, 8)</button>
@@ -207,11 +214,56 @@
       });
     }
 
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+    }
+
     setInterval(() => {
       if (!simulatedNow) renderBars();
-    }, 60000);
+      updateTime();
+    }, 1000);
 
+    // Initial calls
     renderBars();
+    updateTime();
+  </script>
+
+  <!-- FOOTER INFO -->
+  <div id="footer-section" style="margin-top: 2rem; text-align: center; width: 100%; max-width: 800px;">
+
+    <input
+      id="footer-title-input"
+      type="text"
+      placeholder="Enter Title"
+      style="font-size: 48pt; margin: 10px 0; width: 100%; text-align: center; border: none; outline: none;"
+    />
+
+    <p
+      id="footer-date"
+      style="font-size: 32pt; margin: 5px 0;"
+    ></p>
+
+    <textarea
+      id="footer-intention-input"
+      placeholder="Learning Intention"
+      style="font-size: 16pt; margin: 5px 0; width: 100%; height: 2.5em; resize: none; border: none; outline: none; text-align: center;"
+    ></textarea>
+
+    <textarea
+      id="footer-criteria-input"
+      placeholder="Success Criteria"
+      style="font-size: 16pt; margin: 5px 0; width: 100%; height: 2.5em; resize: none; border: none; outline: none; text-align: center;"
+    ></textarea>
+
+  </div>
+
+  <script>
+    // Fill in today's date in “Month Day, Year” format
+    const dateElem = document.getElementById('footer-date');
+    const today = new Date();
+    const opts = { month: 'long', day: 'numeric', year: 'numeric' };
+    dateElem.textContent = today.toLocaleDateString(undefined, opts);
   </script>
 </body>
 </html>
