@@ -35,6 +35,7 @@
       height: 30px;
       border-radius: 6px;
       overflow: hidden;
+      cursor: pointer;
     }
     .progress {
       height: 100%;
@@ -72,9 +73,11 @@
     };
 
     let selectedDay = 'A';
+    let simulatedNow = null;
 
     function setDay(day) {
       selectedDay = day;
+      simulatedNow = null;
       renderBars();
     }
 
@@ -86,12 +89,19 @@
     }
 
     function getPercent(startStr, endStr) {
-      const now = new Date();
+      const now = simulatedNow || new Date();
       const start = parseTime(startStr);
       const end = parseTime(endStr);
       if (now < start) return 0;
       if (now > end) return 100;
       return ((now - start) / (end - start)) * 100;
+    }
+
+    function getColor(percent) {
+      if (percent >= 100) return 'green';
+      if (percent < 25) return 'green';
+      if (percent < 75) return 'gold';
+      return 'red';
     }
 
     function renderBars() {
@@ -108,10 +118,20 @@
         const bar = document.createElement("div");
         bar.className = "progress-bar";
 
+        bar.addEventListener("click", (e) => {
+          const clickX = e.offsetX;
+          const totalWidth = e.currentTarget.offsetWidth;
+          const fraction = clickX / totalWidth;
+          const start = parseTime(p.start);
+          const end = parseTime(p.end);
+          simulatedNow = new Date(start.getTime() + fraction * (end - start));
+          renderBars();
+        });
+
         const fill = document.createElement("div");
         fill.className = "progress";
         fill.style.width = `${percent}%`;
-        fill.style.backgroundColor = `rgb(${Math.floor(255 * (percent / 100))}, ${Math.floor(200 - (percent * 1.5))}, 80)`;
+        fill.style.backgroundColor = getColor(percent);
 
         bar.appendChild(fill);
         wrapper.appendChild(label);
@@ -120,7 +140,10 @@
       });
     }
 
-    setInterval(renderBars, 60000); // update every minute
+    setInterval(() => {
+      if (!simulatedNow) renderBars();
+    }, 60000);
+
     renderBars();
   </script>
 </body>
