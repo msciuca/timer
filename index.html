@@ -26,9 +26,18 @@
       margin: 20px auto;
       max-width: 800px;
     }
-    .label {
+    table {
+      width: 100%;
+      border-spacing: 20px 10px;
+    }
+    td.label-cell {
+      text-align: right;
       font-weight: bold;
-      margin: 10px 0 5px;
+      width: 30%;
+      white-space: nowrap;
+    }
+    td.bar-cell {
+      width: 70%;
     }
     .progress-bar {
       background-color: #ddd;
@@ -52,7 +61,9 @@
     <button onclick="setDay('B')">B Day (2, 4, 6, 8)</button>
   </div>
 
-  <div class="progress-container" id="progressContainer"></div>
+  <div class="progress-container">
+    <table id="progressTable"></table>
+  </div>
 
   <script>
     const periods = {
@@ -105,15 +116,20 @@
     }
 
     function renderBars() {
-      const container = document.getElementById("progressContainer");
-      container.innerHTML = "";
-      periods[selectedDay].forEach((p, i) => {
-        const percent = getPercent(p.start, p.end);
-        const wrapper = document.createElement("div");
+      const table = document.getElementById("progressTable");
+      table.innerHTML = "";
 
-        const label = document.createElement("div");
-        label.className = "label";
-        label.textContent = `${p.label} (${p.start} - ${p.end})`;
+      periods[selectedDay].forEach(p => {
+        const percent = getPercent(p.start, p.end);
+
+        const row = document.createElement("tr");
+
+        const labelCell = document.createElement("td");
+        labelCell.className = "label-cell";
+        labelCell.textContent = `${p.label} (${p.start} - ${p.end})`;
+
+        const barCell = document.createElement("td");
+        barCell.className = "bar-cell";
 
         const bar = document.createElement("div");
         bar.className = "progress-bar";
@@ -134,9 +150,11 @@
         fill.style.backgroundColor = getColor(percent);
 
         bar.appendChild(fill);
-        wrapper.appendChild(label);
-        wrapper.appendChild(bar);
-        container.appendChild(wrapper);
+        barCell.appendChild(bar);
+
+        row.appendChild(labelCell);
+        row.appendChild(barCell);
+        table.appendChild(row);
       });
     }
 
